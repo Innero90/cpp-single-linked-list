@@ -58,6 +58,7 @@ class SingleLinkedList {
         }
 
         BasicIterator& operator++() noexcept {
+            assert(node_ != nullptr);
             node_ = node_->next_node;
             return *this;
         }
@@ -71,10 +72,12 @@ class SingleLinkedList {
         BasicIterator& operator=(const BasicIterator& rhs) = default;
         
         [[nodiscard]] reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &(node_->value);
         }
 
@@ -103,6 +106,7 @@ public:
 
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
         Node* insert_node = new Node(value, pos.node_->next_node);
+        assert(insert_node != nullptr);
         pos.node_->next_node = insert_node;
         ++size_;
         return Iterator(insert_node);
@@ -113,6 +117,7 @@ public:
     }
 
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(size_ > 0);
         Node* temp = pos.node_->next_node;
         pos.node_->next_node = temp->next_node;
         delete temp;
@@ -147,6 +152,9 @@ public:
     }
     
     SingleLinkedList& operator=(const SingleLinkedList& rhs) {
+        if (head_.next_node == rhs.head_.next_node) {
+            return *this;
+        }
         SingleLinkedList tmp(rhs);
         swap(tmp);
         return *this;
@@ -191,11 +199,7 @@ public:
     }
 
     [[nodiscard]] bool IsEmpty() const noexcept {
-        bool is_empty = true;
-        if (head_.next_node != nullptr) {
-            is_empty = false;
-        }
-        return is_empty;
+        return (size_ == 0);
     }
     
     void PushFront(const Type& value) {
@@ -208,8 +212,8 @@ public:
             Node* next_node_copy = head_.next_node->next_node;
             delete head_.next_node;
             head_.next_node = next_node_copy;
-            size_ = 0;
         }
+        size_ = 0;
     }
     
     ~SingleLinkedList() {
@@ -262,4 +266,4 @@ bool operator>(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& 
 template <typename Type>
 bool operator>=(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
     return !(lhs < rhs);
-}
+}  
